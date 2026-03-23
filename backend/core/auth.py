@@ -13,8 +13,8 @@ from passlib.context import CryptContext
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from database.database import async_get_db
-from models import User
+from database.database import get_db
+from models.users import User
 from config.config import settings
 
 pwd_context = CryptContext(
@@ -125,7 +125,7 @@ def decode_token(token: str) -> dict:
 
 async def get_current_user(
     token: str = Depends(oauth2_scheme),
-    db: AsyncSession = Depends(async_get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     FastAPI dependency that resolves the currently authenticated user.
