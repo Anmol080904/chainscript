@@ -5,7 +5,7 @@ from sqlalchemy import pool
 from config.config import settings
 from alembic import context
 import asyncio
-import models.models as models
+import backend.models.users as users
 from database.database import Base
 from config.config import settings
 from sqlalchemy.ext.asyncio import create_async_engine
@@ -25,7 +25,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-import models.models
+import backend.models.users
 
 target_metadata=Base.metadata
 
