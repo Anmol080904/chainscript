@@ -10,6 +10,7 @@ from datetime import datetime,timezone
 if TYPE_CHECKING:
     from models.posts import Post
     from models.token_blacklist import TokenBlacklist
+    from models.version import Version
 class User(Base):
     __tablename__ = "users"
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
@@ -30,6 +31,7 @@ class User(Base):
         "TokenBlacklist", back_populates="user"
     )
     posts:Mapped[list["Post"]]  = relationship("Post",  back_populates="owner", cascade="all, delete-orphan")
+    versions: Mapped[list["Version"]] = relationship("Version", back_populates="author", cascade="all, delete-orphan")
     
 
     def __repr__(self) -> str:

@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import String, Text, DateTime, ForeignKey, Index, text
+from sqlalchemy import String, Text, DateTime, ForeignKey, Index, text,Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import TSVECTOR
 from database.database import Base
@@ -26,6 +26,7 @@ class Post(Base):
     search_vector:  Mapped[str]       = mapped_column(TSVECTOR, nullable=True)
     created_at:     Mapped[datetime]  = mapped_column(DateTime(timezone=True), server_default=text("now()"))
     updated_at:     Mapped[datetime]  = mapped_column(DateTime(timezone=True), server_default=text("now()"))
+    version_count:  Mapped[int] = mapped_column(Integer, default=0)
 
     # Relationships
     owner:    Mapped["User"]         = relationship("User", back_populates="posts")
