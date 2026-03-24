@@ -3,7 +3,9 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, ForeignKey, Integer, String, func
+import uuid
+
+from sqlalchemy import DateTime, ForeignKey, Integer, String, func, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database.database import Base
@@ -17,7 +19,7 @@ class TokenBlacklist(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     token: Mapped[str] = mapped_column(String(512), unique=True, nullable=False, index=True)
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
+    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     blacklisted_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

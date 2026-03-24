@@ -45,7 +45,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 
-def create_access_token(user_id: int) -> str:
+def create_access_token(user_id: UUID) -> str:
     """
     Creates a signed JWT access token for the given user ID.
     The token includes the user ID, token type ('access'), issued-at time,
@@ -83,7 +83,7 @@ def create_reset_token(user_id: UUID) -> str:
     return jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
 
-def create_refresh_token(user_id: int) -> str:
+def create_refresh_token(user_id: UUID) -> str:
     """
     Creates a signed JWT refresh token for the given user ID.
     Longer-lived than the access token (7 days by default).
@@ -153,7 +153,7 @@ async def get_current_user(
 
     result = await db.execute(
         select(User)
-        .where(User.id == int(user_id))
+        .where(User.id == UUID(user_id))
     )
     user = result.scalars().first()
 
