@@ -4,7 +4,13 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import TSVECTOR
 from database.database import Base
 from datetime import datetime
+from typing import TYPE_CHECKING
 
+if TYPE_CHECKING:
+    from models.users import User
+    from models.version import Version
+    from models.tag import Tag
+    from models.share import Share
 class Post(Base):
     __tablename__ = "posts"
     __table_args__ = (

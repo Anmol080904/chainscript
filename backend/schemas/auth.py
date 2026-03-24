@@ -1,6 +1,7 @@
 from typing import Any, Optional
 
 from pydantic import BaseModel, EmailStr, Field
+import uuid
 
 
 # ---------------------------------------------------------------------------
@@ -51,7 +52,7 @@ class ResetPasswordRequest(BaseModel):
 
 
 class RegisterData(BaseModel):
-    id: int
+    id: uuid.UUID
     name: str
     email: EmailStr
     is_active: bool

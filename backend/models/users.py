@@ -6,10 +6,13 @@ from sqlalchemy import Boolean,Integer, String, func,DateTime
 from sqlalchemy.orm import Mapped, mapped_column,relationship
 from typing import TYPE_CHECKING, List, Optional
 from datetime import datetime,timezone
-from models.token_blacklist import TokenBlacklist
+
+if TYPE_CHECKING:
+    from models.posts import Post
+    from models.token_blacklist import TokenBlacklist
 class User(Base):
-    __tablename__="Users"
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    __tablename__ = "users"
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     email: Mapped[str] = mapped_column(
         String(255), unique=True, index=True, nullable=False
@@ -26,6 +29,8 @@ class User(Base):
     blacklisted_tokens: Mapped[List["TokenBlacklist"]] = relationship(
         "TokenBlacklist", back_populates="user"
     )
+    posts:Mapped[list["Post"]]  = relationship("Post",  back_populates="owner", cascade="all, delete-orphan")
+    
 
-def __repr__(self) -> str:
+    def __repr__(self) -> str:
         return f"<User id={self.id} email={self.email}>"
