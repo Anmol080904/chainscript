@@ -10,7 +10,7 @@ class DiffOperation(BaseModel):        # One line in the diff_patch array
 
 class VersionCreate(BaseModel):        # POST /posts/{id}/versions  — request
     content: str
-    commit_message: str | None = None
+    final_message: str | None = None
 
 class VersionOut(BaseModel):           # Response — list view
     id: uuid.UUID
