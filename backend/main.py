@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from routes.auth import router as auth_router
 from routes.posts import post_router
-from routes.versions import version_router
+from routes.versions import version_router, version_action_router
 from fastapi.middleware.cors import CORSMiddleware
 
 
@@ -23,6 +23,7 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(post_router)
 app.include_router(version_router)
+app.include_router(version_action_router)
 
 @app.get("/", tags=["Health"])
 async def root():

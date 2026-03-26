@@ -24,7 +24,7 @@ class BlockchainService:
         ]
 
         self.contract = self.w3.eth.contract(
-            address=settings.REMIX_CONTRACT_ADDRESS,
+            address=self.w3.to_checksum_address(settings.REMIX_CONTRACT_ADDRESS),
             abi=self.abi
         )
 
@@ -45,6 +45,7 @@ class BlockchainService:
             "nonce": nonce,
             "gas": 200000,
             "gasPrice": self.w3.to_wei("10", "gwei"),
+            "chainId": self.w3.eth.chain_id
         })
 
         signed_tx = self.w3.eth.account.sign_transaction(
