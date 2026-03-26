@@ -14,8 +14,6 @@ class VersionHashOut(BaseModel):
     def etherscan_url(self) -> str | None:
         return f"https://sepolia.etherscan.io/tx/{self.tx_hash}" if self.tx_hash else None
 
-    class Config: from_attributes = True
-
 class VerifyResponse(BaseModel):        # GET /versions/{id}/verify
     verified:      bool
     content_hash:  str
