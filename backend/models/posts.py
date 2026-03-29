@@ -33,4 +33,5 @@ class Post(Base):
     versions: Mapped[list["Version"]]= relationship("Version", back_populates="post",
                                                      cascade="all, delete-orphan", order_by="Version.version_number")
     tags:     Mapped[list["Tag"]]    = relationship("Tag", secondary="post_tags", back_populates="posts")
-    share:    Mapped["Share"]        = relationship("Share", back_populates="post", uselist=False)
+    share:    Mapped["Share"]        = relationship("Share", back_populates="post", uselist=False,
+                                                     cascade="all, delete-orphan")

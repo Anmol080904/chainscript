@@ -29,4 +29,5 @@ class Version(Base):
     # Relationships
     post:          Mapped["Post"]        = relationship("Post", back_populates="versions")
     author:        Mapped["User"]        = relationship("User", back_populates="versions")
-    version_hash:  Mapped["VersionHash"] = relationship("VersionHash", back_populates="version", uselist=False)
+    version_hash:  Mapped["VersionHash"] = relationship("VersionHash", back_populates="version", uselist=False,
+                                                     cascade="all, delete-orphan")
