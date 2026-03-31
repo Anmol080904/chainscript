@@ -4,6 +4,13 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import PostEditor from './pages/PostEditor';
+import Profile from './pages/Profile';
+import Settings from './pages/Settings';
+import ShareViewer from './pages/ShareViewer';
+import ForgotPassword from './pages/ForgotPassword';
+import VersionHistory from './pages/VersionHistory';
+import VersionDetail from './pages/VersionDetail';
+import VerifyVersion from './pages/VerifyVersion';
 import './index.css';
 
 // Protected Route Wrapper
@@ -45,6 +52,14 @@ function App() {
               <Register />
             </PublicRoute>
           } />
+          <Route path="/forgot-password" element={
+            <PublicRoute>
+              <ForgotPassword />
+            </PublicRoute>
+          } />
+
+          {/* Public Share Route */}
+          <Route path="/share/:token" element={<ShareViewer />} />
 
           {/* Protected Routes */}
           <Route path="/dashboard" element={
@@ -56,6 +71,35 @@ function App() {
           <Route path="/editor/:id?" element={
             <ProtectedRoute>
               <PostEditor />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/posts/:id/versions" element={
+            <ProtectedRoute>
+              <VersionHistory />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/posts/:id/versions/:n" element={
+            <ProtectedRoute>
+               <VersionDetail />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/versions/:versionId/verify" element={
+            <ProtectedRoute>
+               <VerifyVersion />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/profile" element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          } />
+          <Route path="/settings" element={
+            <ProtectedRoute>
+              <Settings />
             </ProtectedRoute>
           } />
 

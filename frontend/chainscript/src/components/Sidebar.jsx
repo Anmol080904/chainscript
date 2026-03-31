@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, FileText, Settings, LogOut } from 'lucide-react';
+import { LayoutDashboard, FileText, Settings, LogOut, User } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const Sidebar = () => {
@@ -24,10 +24,13 @@ const Sidebar = () => {
       </div>
 
       <nav className="sidebar-nav">
-        <NavLink to="/dashboard" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+        <NavLink to="/dashboard" className={({ isActive }) => "nav-link" + (isActive ? " active" : "")}>
           <LayoutDashboard size={18} /> Dashboard
         </NavLink>
-        <NavLink to="/editor" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+        <NavLink to="/profile" className={({ isActive }) => "nav-link" + (isActive ? " active" : "")}>
+          <User size={18} /> Profile
+        </NavLink>
+        <NavLink to="/editor" className={({ isActive }) => "nav-link" + (isActive ? " active" : "")}>
           <FileText size={18} /> Create Post
         </NavLink>
         <NavLink to="/settings" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
