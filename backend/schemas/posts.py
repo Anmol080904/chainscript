@@ -21,6 +21,8 @@ class PostData(BaseModel):
     created_at: datetime
     updated_at: datetime
     version_count: int = 0
+    latest_version_id: Optional[uuid.UUID] = None
+
 
 class PostResponse(BaseModel):
     status: bool

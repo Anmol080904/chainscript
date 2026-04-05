@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Tag, X } from 'lucide-react';
+import { Tag, X, Layers } from 'lucide-react';
 import api from '../api/api';
+import { toast } from 'react-toastify';
 
 const PostTags = ({ postId }) => {
   const [allTags, setAllTags] = useState([]);
@@ -37,9 +38,10 @@ const PostTags = ({ postId }) => {
       const selectedTag = allTags.find(t => t.id === tagId);
       if (selectedTag) {
         setPostTags([...postTags, selectedTag]);
+        toast.info(`TAG ${selectedTag.name.toUpperCase()} LINKED.`);
       }
     } catch (err) {
-      alert("Error adding tag");
+      toast.error("ERROR_LINKING_METADATA");
     }
   };
 
@@ -47,40 +49,42 @@ const PostTags = ({ postId }) => {
     try {
       await api.delete(`/posts/${postId}/tags/${tagId}`);
       setPostTags(postTags.filter(t => t.id !== tagId));
+      toast.info("METADATA_UNLINKED");
     } catch (err) {
-      alert("Error removing tag");
+      toast.error("UNLINKING_PROCESS_FAILED");
     }
   };
 
-  if (loading) return null; // Or a skeleton loader
+  if (loading) return null;
   
   const unassignedTags = allTags.filter(t => !postTags.find(pt => pt.id === t.id));
 
   return (
-    <div style={{ padding: '1rem', background: 'var(--surface-color)', borderRadius: '8px', border: '1px solid var(--surface-border)' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-        <Tag size={16} color="var(--primary-accent)" /> 
-        <strong>Document Organization</strong>
-        <select onChange={handleAddTag} value="" style={{ padding: '0.3rem', width: 'auto', marginLeft: 'auto' }}>
-            <option value="" disabled>Assign Tag...</option>
+    <div className="glass-panel" style={{ padding: '1.5rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
+        <Layers size={18} color="var(--primary-accent)" /> 
+        <strong style={{ fontFamily: 'Orbitron', fontSize: '0.8rem', letterSpacing: '1px' }}>METADATA_LABELS</strong>
+        <select onChange={handleAddTag} value="" style={{ padding: '0.4rem', width: 'auto', marginLeft: 'auto', fontSize: '0.75rem', fontFamily: 'Orbitron', margin: 0 }}>
+            <option value="" disabled>ASSIGN_TAG...</option>
             {unassignedTags.map(t => (
-               <option key={t.id} value={t.id}>{t.name}</option>
+               <option key={t.id} value={t.id}>{t.name.toUpperCase()}</option>
             ))}
         </select>
       </div>
       <div style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap' }}>
         {postTags.map(t => (
-            <span key={t.id} style={{ background: 'var(--background-color)', padding: '0.3rem 0.8rem', borderRadius: '4px', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.5rem', border: '1px solid var(--surface-border)' }}>
-               {t.name}
+            <span key={t.id} className="badge" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255, 0, 0, 0.05)' }}>
+               {t.name.toUpperCase()}
                <button onClick={() => handleRemoveTag(t.id)} style={{ background: 'transparent', border: 'none', color: 'var(--danger)', cursor: 'pointer', padding: 0, display: 'flex' }}>
-                  <X size={14} />
+                  <X size={12} />
                </button>
             </span>
         ))}
-        {postTags.length === 0 && <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>No tags assigned yet. Select one above.</span>}
+        {postTags.length === 0 && <span style={{ color: 'var(--text-secondary)', fontSize: '0.7rem' }}>NO_METADATA_ASSIGNED. SELECT_LABELS_ABOVE.</span>}
       </div>
     </div>
   );
 };
 
 export default PostTags;
+

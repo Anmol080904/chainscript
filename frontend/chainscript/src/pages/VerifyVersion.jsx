@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import DashboardLayout from '../layouts/DashboardLayout';
-import { ShieldCheck, Activity, Key, Link as ExternalLink, CheckCircle } from 'lucide-react';
+import { ShieldCheck, Activity, Key, Link as ExternalLink, CheckCircle, Database } from 'lucide-react';
 import api from '../api/api';
+import { toast } from 'react-toastify';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const VerifyVersion = () => {
   const { versionId } = useParams();
@@ -20,8 +22,15 @@ const VerifyVersion = () => {
         ]);
         setProof(verifyRes.data);
         setHashData(hashRes.data);
+        if (verifyRes.data.verified) {
+           toast.success("Verification confirmed.");
+        } else {
+           toast.warning("Verification mismatch detected.");
+        }
       } catch(err) {
-        setError(err.response?.data?.detail || "Cryptographic proof could not be loaded.");
+        const msg = err.response?.data?.detail || "Cryptographic proof could not be loaded.";
+        setError(msg);
+        toast.error("Audit sequence interrupted.");
       } finally {
         setLoading(false);
       }
@@ -34,67 +43,68 @@ const VerifyVersion = () => {
       <div className="header-row">
         <div>
           <h1 style={{ display: 'flex', alignItems: 'center', gap: '1rem', margin: 0 }}>
-             Cryptographic Audit <ShieldCheck color="var(--success)" size={32} />
+             Blockchain Verification <Database color="var(--primary-accent)" size={32} />
           </h1>
-          <p style={{ margin: 0, marginTop: '0.5rem', color: 'var(--text-secondary)' }}>Immutable ledger details indicating authenticity and timestamp execution.</p>
+          <p style={{ margin: 0, marginTop: '0.5rem', color: 'var(--text-secondary)' }}>Cryptographic details ensuring document authenticity and immutability.</p>
         </div>
       </div>
 
       {loading ? (
-        <div className="loader">Auditing ledger...</div>
+        <LoadingSpinner message="Verifying ledger integrity..." />
       ) : error ? (
-        <div className="alert-danger" style={{ textAlign: 'center', padding: '3rem' }}>
-           <h3>Unable to verify</h3>
+        <div className="glass-panel" style={{ textAlign: 'center', padding: '5rem 2rem' }}>
+           <h3 style={{ color: 'var(--danger)' }}>System Error</h3>
            <p>{error}</p>
+           <Link to="/dashboard" className="btn-secondary" style={{ marginTop: '2rem' }}>Return to Dashboard</Link>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', maxWidth: '800px', margin: '0 auto' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', maxWidth: '900px', margin: '0 auto' }}>
            
-           <div className="glass-panel" style={{ border: proof.verified ? '1px solid var(--success)' : '1px solid var(--danger)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
+           <div className="glass-panel" style={{ borderTop: proof.verified ? '4px solid var(--success)' : '4px solid var(--danger)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginBottom: '2.5rem' }}>
                  {proof.verified ? (
-                    <CheckCircle size={32} color="var(--success)" />
+                    <CheckCircle size={48} color="var(--success)" />
                  ) : (
-                    <Activity size={32} color="var(--danger)" />
+                    <Activity size={48} color="var(--danger)" />
                  )}
                  <div>
-                    <h2 style={{ margin: 0, color: proof.verified ? 'var(--success)' : 'var(--danger)' }}>
-                       {proof.verified ? 'Verification Succeeded' : 'Verification Fails Checksum'}
+                    <h2 style={{ margin: 0, color: 'var(--text-primary)', fontSize: '1.75rem' }}>
+                       {proof.verified ? 'Verification Successful' : 'Verification Failed'}
                     </h2>
-                    <p style={{ margin: 0, color: 'var(--text-secondary)' }}>This digital asset has been securely sealed.</p>
+                    <p style={{ margin: 0, color: 'var(--text-secondary)', fontWeight: 500 }}>The document seal is {proof.verified ? 'intact and valid' : 'potentially tampered with'}.</p>
                  </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem' }}>
-                 <div style={{ background: 'var(--background-color)', padding: '1rem', borderRadius: '4px' }}>
-                    <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                       <Key size={14} /> SHA-256 Content Hash Payload
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem' }}>
+                 <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--surface-border)' }}>
+                    <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700, textTransform: 'uppercase' }}>
+                       <Key size={14} /> Content Hash (SHA-256)
                     </div>
-                    <code style={{ wordBreak: 'break-all', color: 'var(--primary-accent)' }}>{proof.content_hash}</code>
+                    <code style={{ wordBreak: 'break-all', color: 'var(--text-primary)', fontSize: '0.95rem', fontFamily: 'monospace' }}>{proof.content_hash}</code>
                  </div>
                  
-                 <div style={{ background: 'var(--background-color)', padding: '1rem', borderRadius: '4px' }}>
-                    <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                       <Activity size={14} /> Network Transaction Hash (TxHash)
+                 <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--surface-border)' }}>
+                    <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700, textTransform: 'uppercase' }}>
+                       <Activity size={14} /> Transaction ID
                     </div>
-                    <code style={{ wordBreak: 'break-all', color: 'var(--success)' }}>{proof.tx_hash || 'Pending...'}</code>
+                    <code style={{ wordBreak: 'break-all', color: 'var(--text-primary)', fontSize: '0.95rem', fontFamily: 'monospace' }}>{proof.tx_hash || 'Pending validation...'}</code>
                  </div>
 
-                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                    <div style={{ background: 'var(--background-color)', padding: '1rem', borderRadius: '4px' }}>
-                       <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginBottom: '0.5rem' }}>Executed Block Number</div>
-                       <strong>{proof.block_number || 'N/A'}</strong>
+                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                    <div style={{ background: '#f8fafc', padding: '1.25rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--surface-border)' }}>
+                       <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', marginBottom: '0.5rem', fontWeight: 700, textTransform: 'uppercase' }}>Block Number</div>
+                       <strong style={{ fontSize: '1.25rem' }}>{proof.block_number || 'N/A'}</strong>
                     </div>
-                    <div style={{ background: 'var(--background-color)', padding: '1rem', borderRadius: '4px' }}>
-                       <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginBottom: '0.5rem' }}>Seal Status</div>
-                       <strong>{hashData.seal_status.toUpperCase()}</strong>
+                    <div style={{ background: '#f8fafc', padding: '1.25rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--surface-border)' }}>
+                       <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', marginBottom: '0.5rem', fontWeight: 700, textTransform: 'uppercase' }}>Seal Status</div>
+                       <strong style={{ fontSize: '1.25rem', color: 'var(--primary-accent)' }}>{hashData.seal_status.toUpperCase()}</strong>
                     </div>
                  </div>
               </div>
 
               {proof.etherscan_url && (
-                 <a href={proof.etherscan_url} target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem', textDecoration: 'none' }}>
-                    View on Etherscan Explorer <ExternalLink size={16} style={{ marginLeft: '0.5rem' }} />
+                 <a href={proof.etherscan_url} target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ display: 'flex', justifyContent: 'center', marginTop: '3rem', width: '100%', textDecoration: 'none' }}>
+                    View on Blockchain Explorer <ExternalLink size={16} />
                  </a>
               )}
            </div>
@@ -105,3 +115,5 @@ const VerifyVersion = () => {
 };
 
 export default VerifyVersion;
+
+

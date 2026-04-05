@@ -35,6 +35,8 @@ async def get_user_posts(current_user: User = Depends(get_current_user), db: Asy
     posts = result.scalars().all()
     for p in posts:
         p.version_count = len(p.versions)
+        if p.versions:
+            p.latest_version_id = sorted(p.versions, key=lambda v: v.version_number, reverse=True)[0].id
         
     return PostListResponse(
         status=True,
@@ -95,6 +97,8 @@ async def search_posts(q: str, current_user: User = Depends(get_current_user), d
     posts = result.scalars().all()
     for p in posts:
         p.version_count = len(p.versions)
+        if p.versions:
+            p.latest_version_id = sorted(p.versions, key=lambda v: v.version_number, reverse=True)[0].id
         
     return PostListResponse(
         status=True,
@@ -124,6 +128,9 @@ async def get_post(id: uuid.UUID, current_user: User = Depends(get_current_user)
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=post_not_found)
     
     post.version_count = len(post.versions)
+    if post.versions:
+        post.latest_version_id = sorted(post.versions, key=lambda v: v.version_number, reverse=True)[0].id
+
     
     return PostResponse(
         status=True,
@@ -162,6 +169,8 @@ async def update_post(id: uuid.UUID, payload: PostUpdate, current_user: User = D
     await db.refresh(post)
     
     post.version_count = len(post.versions)
+    if post.versions:
+        post.latest_version_id = sorted(post.versions, key=lambda v: v.version_number, reverse=True)[0].id
     
     return PostResponse(
         status=True,

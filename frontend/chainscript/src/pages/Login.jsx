@@ -2,34 +2,40 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { LogIn } from 'lucide-react';
+import { toast } from 'react-toastify';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError(null);
     setLoading(true);
     try {
       await login(email, password);
+      toast.success("Login successful.");
       navigate('/dashboard');
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message || "Invalid credentials.");
     } finally {
       setLoading(false);
     }
   };
 
+  if (loading) return <LoadingSpinner message="Authenticating..." />;
+
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
       <div className="glass-panel" style={{ width: '100%', maxWidth: '400px' }}>
-        <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Welcome Back</h2>
-        {error && <div className="error-message">{error}</div>}
+        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <h2 style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>Welcome Back</h2>
+          <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Sign in to manage your documents</p>
+        </div>
+        
         <form onSubmit={handleLogin}>
           <div className="form-group">
             <label>Email Address</label>
@@ -38,7 +44,7 @@ const Login = () => {
               required 
               value={email} 
               onChange={e => setEmail(e.target.value)} 
-              placeholder="admin@example.com"
+              placeholder="admin@chainscript.io"
             />
           </div>
           <div className="form-group">
@@ -51,16 +57,19 @@ const Login = () => {
               placeholder="••••••••"
             />
           </div>
-          <button type="submit" className="btn-primary" style={{ width: '100%' }} disabled={loading}>
-            <LogIn size={18} /> {loading ? 'Logging in...' : 'Sign In'}
+          <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '0.5rem' }} disabled={loading}>
+            <LogIn size={18} /> Sign In
           </button>
         </form>
-        <p style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.875rem' }}>
-          Don't have an account? <Link to="/register">Create one</Link>
-        </p>
+        
+        <div style={{ marginTop: '2rem', textAlign: 'center', fontSize: '0.9rem' }}>
+           <p>Don't have an account? <Link to="/register" style={{ fontWeight: 600 }}>Create one</Link></p>
+        </div>
       </div>
     </div>
   );
 }
 
 export default Login;
+
+

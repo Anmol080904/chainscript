@@ -24,4 +24,11 @@ class Share(Base):
     def is_expired(self) -> bool:
         if self.expires_at is None:
             return False
-        return datetime.datetime.utcnow() > self.expires_at.replace(tzinfo=None)
+        # Ensure we are comparing aware with aware or naive with naive.
+        # SQLAlchemy DateTime(timezone=True) usually returns aware datetimes if the driver support it.
+        now = datetime.now(timezone.utc)
+        expires = self.expires_at
+        if expires.tzinfo is None:
+            expires = expires.replace(tzinfo=timezone.utc)
+        return now > expires
+

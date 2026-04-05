@@ -63,12 +63,18 @@ class BlockchainService:
 
     async def verify_version(self, content: str):
         content_hash = self.hash_content(content)
+        
+        try:
+            is_valid = self.contract.functions.verifyVersion(
+                self.w3.to_bytes(hexstr=content_hash)
+            ).call()
 
-        is_valid = self.contract.functions.verifyVersion(
-            self.w3.to_bytes(hexstr=content_hash)
-        ).call()
-
-        return {
-            "verified": is_valid,
-            "content_hash": content_hash
-        }
+            return {
+                "verified": is_valid,
+                "content_hash": content_hash
+            }
+        except Exception as e:
+            print(f"BLOCKCHAIN_VERIFY_ERROR: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            raise e

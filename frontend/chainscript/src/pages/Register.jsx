@@ -2,36 +2,41 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { UserPlus } from 'lucide-react';
+import { toast } from 'react-toastify';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    setError(null);
     setLoading(true);
     try {
       await register(name, email, password);
-      // Auto-login or redirect to login. We'll simply redirect.
+      toast.success("Account created successfully. Please sign in.");
       navigate('/login');
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message || "Registration failed.");
     } finally {
       setLoading(false);
     }
   };
 
+  if (loading) return <LoadingSpinner message="Creating your account..." />;
+
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
       <div className="glass-panel" style={{ width: '100%', maxWidth: '400px' }}>
-        <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Create Account</h2>
-        {error && <div className="error-message">{error}</div>}
+        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <h2 style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>Create Account</h2>
+          <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Join Chainscript to secure your documents</p>
+        </div>
+
         <form onSubmit={handleRegister}>
           <div className="form-group">
             <label>Full Name</label>
@@ -51,7 +56,7 @@ const Register = () => {
               required 
               value={email} 
               onChange={e => setEmail(e.target.value)} 
-              placeholder="admin@example.com"
+              placeholder="name@example.com"
             />
           </div>
           <div className="form-group">
@@ -65,16 +70,18 @@ const Register = () => {
               minLength={8}
             />
           </div>
-          <button type="submit" className="btn-primary" style={{ width: '100%' }} disabled={loading}>
-            <UserPlus size={18} /> {loading ? 'Creating...' : 'Sign Up'}
+          <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '0.5rem' }} disabled={loading}>
+            <UserPlus size={18} /> Sign Up
           </button>
         </form>
-        <p style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.875rem' }}>
-          Already have an account? <Link to="/login">Sign in</Link>
-        </p>
+        <div style={{ marginTop: '2rem', textAlign: 'center', fontSize: '0.9rem' }}>
+          <p>Already have an account? <Link to="/login" style={{ fontWeight: 600 }}>Sign in</Link></p>
+        </div>
       </div>
     </div>
   );
 }
 
 export default Register;
+
+
